@@ -21,20 +21,19 @@
         .rule-box { border: 2px solid var(--rule-color); background: #fff5f5; border-radius: 12px; padding: 15px; margin-bottom: 10px; max-width: 500px; width: 95%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .rule-box h2 { margin: 0 0 15px 0; font-size: 1rem; color: var(--rule-color); text-align: center; border-bottom: 1px dashed var(--rule-color); padding-bottom: 8px; }
         
-        /* アンカーリンク用の設定 */
-        .rule-anchor { text-decoration: none; display: block; width: fit-content; margin: 12px auto 6px auto; }
-        .rule-sub-title { display: block; padding: 2px 12px; background: var(--sub-bg); color: #666; font-size: 0.7rem; font-weight: bold; border-radius: 4px; border: 1px solid #ddd; cursor: pointer; transition: 0.2s; }
-        .rule-sub-title:hover { opacity: 0.7; }
-        
+        .rule-sub-title { display: block; width: fit-content; margin: 12px auto 6px auto; padding: 2px 12px; background: var(--sub-bg); color: #666; font-size: 0.7rem; font-weight: bold; border-radius: 4px; border: 1px solid #ddd; }
         .rule-text { font-size: 0.75rem; color: #555; text-align: center; line-height: 1.6; margin-bottom: 5px; }
 
         .color-guide { display: flex; justify-content: center; gap: 12px; margin: 10px 0; flex-wrap: wrap; }
         .guide-item { display: flex; align-items: center; gap: 5px; font-size: 0.75rem; font-weight: bold; }
         .color-chip { width: 14px; height: 14px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.1); }
         
+        .preview-link { display: block; text-align: center; margin-top: 15px; color: var(--accent); font-size: 0.8rem; font-weight: bold; text-decoration: none; border: 1px solid var(--accent); padding: 5px; border-radius: 8px; background: #fff; transition: 0.3s; }
+        .preview-link:hover { background: var(--accent); color: white; }
+
         .warning-note { color: var(--rule-color); font-weight: bold; font-size: 0.7rem; text-align: center; margin-top: 10px; display: block; border-top: 1px solid #eee; padding-top: 8px; }
 
-        .container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 900px; min-height: 100px; margin-top: 20px; scroll-margin-top: 20px; }
+        .container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 900px; min-height: 100px; margin-top: 20px; }
         @media (min-width: 600px) { .container { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; } }
 
         .bottle-card { background: white; border-radius: 15px; padding: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; position: relative; }
@@ -64,7 +63,7 @@
         .preset-label { font-size: 0.75rem; color: #888; margin: 15px 0 8px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: bold; }
         .preset-label::before, .preset-label::after { content: ""; height: 1px; flex-grow: 1; background: #ddd; }
 
-        .preview-section { width: 100%; max-width: 900px; margin-top: 50px; padding: 30px 20px; border-top: 2px dashed #eee; text-align: center; scroll-margin-top: 20px; }
+        .preview-section { width: 100%; max-width: 900px; margin-top: 50px; padding: 30px 20px; border-top: 2px dashed #eee; text-align: center; }
         .preview-capture-area { background: #fff; padding: 30px 15px; border-radius: 20px; display: inline-block; width: 100%; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
         .preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
         @media (min-width: 600px) { .preview-grid { grid-template-columns: repeat(6, 1fr); } }
@@ -92,17 +91,19 @@
             <div class="guide-item"><div class="color-chip" style="background: #6366f1;"></div><span>青色：苦手</span></div>
         </div>
 
-        <a href="#bottleContainer" class="rule-anchor"><span class="rule-sub-title">量</span></a>
+        <span class="rule-sub-title">量</span>
         <p class="rule-text">ボタン長押しで注入。＋－で微調整可。</p>
 
-        <a href="#bottleContainer" class="rule-anchor"><span class="rule-sub-title">濃度</span></a>
+        <span class="rule-sub-title">濃度</span>
         <p class="rule-text">下のスライダーで「本気度」を調整。</p>
 
-        <a href="#bottleContainer" class="rule-anchor"><span class="rule-sub-title">こだわり</span></a>
+        <span class="rule-sub-title">こだわり</span>
         <p class="rule-text">各瓶に一言メモを自由に書き込めます。</p>
 
-        <a href="#previewArea" class="rule-anchor"><span class="rule-sub-title">保存・共有</span></a>
+        <span class="rule-sub-title">保存・共有</span>
         <p class="rule-text">下部のプレビューをスクショしてください！<br>または、URLコピーで今の瓶を共有できます。</p>
+
+        <a href="#previewArea" class="preview-link">プレビュー（保存用）はこちら</a>
 
         <span class="warning-note">⚠️ 音が出ます。周囲に注意してください。</span>
     </div>
