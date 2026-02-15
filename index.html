@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>性癖瓶 Ver.8.4</title>
+    <title>性癖瓶 Ver.8.6</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <style>
         :root { --bg: #fdfbfb; --accent: #ff4d79; --rule-color: #e63946; }
@@ -94,26 +94,26 @@
     </div>
 
     <div class="preset-container">
-        <div class="preset-label">部位・身体</div>
+        <div class="preset-label">身体・部位</div>
         <div class="preset-group" id="pre-1"></div>
-        <div class="preset-label">関係・シチュ</div>
+        <div class="preset-label">髪型</div>
         <div class="preset-group" id="pre-2"></div>
-        <div class="preset-label">性向・属性</div>
+        <div class="preset-label">関係・シチュ</div>
         <div class="preset-group" id="pre-3"></div>
-        <div class="preset-label">行為・行動</div>
+        <div class="preset-label">性向・属性</div>
         <div class="preset-group" id="pre-4"></div>
-        <div class="preset-label">タイプ</div>
+        <div class="preset-label">行為・行動</div>
         <div class="preset-group" id="pre-5"></div>
     </div>
 
     <script>
         const PRESET_COLORS = ['#ff5d8f', '#94a3b8', '#6366f1'];
         const PRESETS = [
-            {id:'pre-1', items:['長身','日焼け・褐色','貧乳・微乳','巨乳','お尻']},
-            {id:'pre-2', items:['体格差','主従','密室','コスプレ','お漏らし']},
-            {id:'pre-3', items:['ロリ','ショタ','お姉さん','妹・姉','幼馴染','ギャル','TS','ツンデレ','同い年','ローション・オイル','汗','小悪魔']},
-            {id:'pre-4', items:['あくび','くしゃみ','声','首絞め','踏みつけ','命令','目隠し','放置','拘束','緊縛','NTR','野外・露出','キス','ハグ','催眠']},
-            {id:'pre-5', items:['外国人・ハーフ','男の娘']}
+            {id:'pre-1', items:['長身','小柄','モデル体型','日焼け','褐色','貧乳・微乳','巨乳','お尻','手','生足・太もも','おへそ','背中','そばかす']},
+            {id:'pre-2', items:['ショートヘア','ロングヘア','ボブヘア','ポニーテール','ツインテール','お団子ヘア','ウルフカット','インナーカラー','ぱっつん','三つ編み','シースルーバング','デコ出し']},
+            {id:'pre-3', items:['体格差','主従関係','密室','コスプレ','お漏らし','先生と生徒','NTR','野外・露出','幼馴染','同い年','背徳感','制服']},
+            {id:'pre-4', items:['ロリ','ショタ','お姉さん','妹・姉','ギャル','メスガキ','清楚','清楚ビッチ','無口','クーデレ','地雷系','TS','ツンデレ','天然・ドジっ子','小悪魔','ギャップ萌え','外国人・ハーフ','男の娘','眼鏡女子','オタク女子','強気・男勝り','スポーツ女子','高学歴女子','一人称名前']},
+            {id:'pre-5', items:['ローション・オイル','汗','あくび','くしゃみ','焦らし','指舐め','声','囁き・耳攻め','首絞め','命令','催眠','目隠し','緊縛','放置','拘束','M','S','キス','ハグ']}
         ];
         
         let bottles = [];
@@ -148,13 +148,11 @@
                 const group = document.getElementById(p.id);
                 if(group) {
                     p.items.forEach(name => {
-                        if(name) {
-                            const btn = document.createElement('div');
-                            btn.className = 'preset-btn';
-                            btn.innerText = name;
-                            btn.onclick = () => addPresetBottle(name);
-                            group.appendChild(btn);
-                        }
+                        const btn = document.createElement('div');
+                        btn.className = 'preset-btn';
+                        btn.innerText = name;
+                        btn.onclick = () => addPresetBottle(name);
+                        group.appendChild(btn);
                     });
                 }
             });
