@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>性癖瓶 Ver.11.0 - Authentic Edition</title>
+    <title>性癖瓶 Ver.11.1 - Ultimate Edition</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <style>
-        :root { --bg: #fdfbfb; --accent: #ff4d79; --rule-color: #e63946; }
+        :root { --bg: #fdfbfb; --accent: #ff4d79; --rule-color: #e63946; --sub-bg: #eee; }
         * { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; box-sizing: border-box; }
         input[type="text"] { -webkit-user-select: text; user-select: text; }
 
@@ -17,14 +17,18 @@
         .tab-btn { padding: 6px 18px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; cursor: pointer; border: 2px solid #ddd; color: #aaa; transition: 0.3s; background: white; }
         .tab-btn.active { border-color: var(--accent); color: var(--accent); background: #fff0f3; }
 
-        /* 赤枠：完璧に復元 */
+        /* 赤枠内のデザイン変更 */
         .rule-box { border: 2px solid var(--rule-color); background: #fff5f5; border-radius: 12px; padding: 15px; margin-bottom: 10px; max-width: 500px; width: 95%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .rule-box h2 { margin: 0 0 12px 0; font-size: 1rem; color: var(--rule-color); text-align: center; border-bottom: 1px dashed var(--rule-color); padding-bottom: 5px; }
-        .color-guide { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
-        .guide-item { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; font-weight: bold; }
-        .color-chip { width: 18px; height: 18px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); }
-        .usage-notes { font-size: 0.75rem; color: #666; border-top: 1px solid #eee; padding-top: 10px; line-height: 1.5; }
-        .warning-note { color: var(--rule-color); font-weight: bold; margin-top: 5px; display: block; }
+        .rule-box h2 { margin: 0 0 15px 0; font-size: 1rem; color: var(--rule-color); text-align: center; border-bottom: 1px dashed var(--rule-color); padding-bottom: 8px; }
+        
+        .rule-sub-title { display: block; width: fit-content; margin: 12px auto 6px auto; padding: 2px 12px; background: var(--sub-bg); color: #666; font-size: 0.7rem; font-weight: bold; border-radius: 4px; border: 1px solid #ddd; }
+        .rule-text { font-size: 0.75rem; color: #555; text-align: center; line-height: 1.6; margin-bottom: 5px; }
+
+        .color-guide { display: flex; justify-content: center; gap: 12px; margin: 10px 0; flex-wrap: wrap; }
+        .guide-item { display: flex; align-items: center; gap: 5px; font-size: 0.75rem; font-weight: bold; }
+        .color-chip { width: 14px; height: 14px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.1); }
+        
+        .warning-note { color: var(--rule-color); font-weight: bold; font-size: 0.7rem; text-align: center; margin-top: 10px; display: block; border-top: 1px solid #eee; padding-top: 8px; }
 
         .container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 900px; min-height: 100px; margin-top: 20px; }
         @media (min-width: 600px) { .container { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; } }
@@ -77,20 +81,26 @@
 
     <div class="rule-box">
         <h2>◀︎ 性癖瓶のルール ▶︎</h2>
+        
         <div class="color-guide">
-            <div class="guide-item"><div class="color-chip" style="background: #ff5d8f;"></div><span>ピンク：好き / 執着 / 興奮</span></div>
-            <div class="guide-item"><div class="color-chip" style="background: #94a3b8;"></div><span>グレー：無関心 / 微妙</span></div>
-            <div class="guide-item"><div class="color-chip" style="background: #6366f1;"></div><span>青色：嫌い / 苦手 / 地雷</span></div>
+            <div class="guide-item"><div class="color-chip" style="background: #ff5d8f;"></div><span>ピンク：好き</span></div>
+            <div class="guide-item"><div class="color-chip" style="background: #94a3b8;"></div><span>グレー：普通</span></div>
+            <div class="guide-item"><div class="color-chip" style="background: #6366f1;"></div><span>青色：苦手</span></div>
         </div>
-        <div class="usage-notes">
-            ・<strong>量:</strong> ボタン長押しで注入。＋－でも微調整可。<br>
-            ・<strong>濃度:</strong> 下のバーで本気度（不透明度）を調整してください。<br>
-            ・<strong>一言メモ:</strong> 各瓶にこだわりを書き込めます。<br>
-            ・<strong>並び替え:</strong> 左上の「⠿」をドラッグして順番を入れ替えられます。<br>
-            ・<strong>保存:</strong> 右上の「🔓」で内容をロックできます。<br>
-            ・<strong>共有:</strong> 『URLをコピー』して自分だけの性癖瓶を共有しましょう！<br>
-            <span class="warning-note">⚠️ 音が出ます。周囲に注意してください。</span>
-        </div>
+
+        <span class="rule-sub-title">量</span>
+        <p class="rule-text">ボタン長押しで注入。＋－で微調整可。</p>
+
+        <span class="rule-sub-title">濃度</span>
+        <p class="rule-text">下のスライダーで「本気度」を調整。</p>
+
+        <span class="rule-sub-title">こだわり</span>
+        <p class="rule-text">各瓶に一言メモを自由に書き込めます。</p>
+
+        <span class="rule-sub-title">保存・共有</span>
+        <p class="rule-text">下部のプレビューをスクショできます！<br>または、URLコピーで今の瓶を共有できます。</p>
+
+        <span class="warning-note">⚠️ 音が出ます。周囲に注意してください。</span>
     </div>
 
     <div class="container" id="bottleContainer"></div>
@@ -121,13 +131,12 @@
 
     <script>
         const PRESET_COLORS = ['#ff5d8f', '#94a3b8', '#6366f1'];
-        // あなたが提示した完璧なリスト
-        const PRESETS = [ 
-            {id:'pre-1', items:['長身','小柄','モデル体型','日焼け','褐色','貧乳・微乳','巨乳','お尻','手','生足・太もも','おへそ','背中','そばかす']}, 
-            {id:'pre-2', items:['ショートヘア','ロングヘア','ボブヘア','ポニーテール','ツインテール','お団子ヘア','ウルフカット','インナーカラー','ぱっつん','三つ編み','シースルーバング','デコ出し']}, 
-            {id:'pre-3', items:['体格差','主従関係','密室','コスプレ','お漏らし','先生と生徒','NTR','野外・露出','幼馴染','同い年','背徳感','制服']}, 
-            {id:'pre-4', items:['ロリ','ショタ','お姉さん','妹・姉','ギャル','メスガキ','清楚','清楚ビッチ','無口','クーデレ','地雷系','TS','ツンデレ','天然・ドジっ子','小悪魔','ギャップ萌え','外国人・ハーフ','男の娘','眼鏡女子','オタク女子','強気・男勝り','スポーツ女子','高学歴女子','一人称名前']}, 
-            {id:'pre-5', items:['ローション・オイル','汗','あくび','くしゃみ','焦らし','指舐め','声','囁き・耳攻め','首絞め','命令','催眠','目隠し','緊縛','放置','拘束','M','S','キス','ハグ']} 
+        const PRESETS = [ 
+            {id:'pre-1', items:['長身','小柄','モデル体型','日焼け','褐色','貧乳・微乳','巨乳','お尻','手','生足・太もも','おへそ','背中','そばかす']}, 
+            {id:'pre-2', items:['ショートヘア','ロングヘア','ボブヘア','ポニーテール','ツインテール','お団子ヘア','ウルフカット','インナーカラー','ぱっつん','三つ編み','シースルーバング','デコ出し']}, 
+            {id:'pre-3', items:['体格差','主従関係','密室','コスプレ','お漏らし','先生と生徒','NTR','野外・露出','幼馴染','同い年','背徳感','制服']}, 
+            {id:'pre-4', items:['ロリ','ショタ','お姉さん','妹・姉','ギャル','メスガキ','清楚','清楚ビッチ','無口','クーデレ','地雷系','TS','ツンデレ','天然・ドジっ子','小悪魔','ギャップ萌え','外国人・ハーフ','男の娘','眼鏡女子','オタク女子','強気・男勝り','スポーツ女子','高学歴女子','一人称名前']}, 
+            {id:'pre-5', items:['ローション・オイル','汗','あくび','くしゃみ','焦らし','指舐め','声','囁き・耳攻め','首絞め','命令','催眠','目隠し','緊縛','放置','拘束','M','S','キス','ハグ']} 
         ];
         
         let bottles = [];
