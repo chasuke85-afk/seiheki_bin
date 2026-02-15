@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>性癖瓶 Ver.8.8</title>
+    <title>性癖瓶 Ver.9.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <style>
         :root { --bg: #fdfbfb; --accent: #ff4d79; --rule-color: #e63946; }
@@ -26,8 +26,10 @@
         .usage-notes { font-size: 0.75rem; color: #666; border-top: 1px solid #eee; padding-top: 10px; line-height: 1.5; }
         .warning-note { color: var(--rule-color); font-weight: bold; margin-top: 5px; display: block; }
 
-        /* アンカーリンク用スタイル */
-        .anchor-link { font-size: 0.8rem; color: #888; text-decoration: none; margin-bottom: 25px; border-bottom: 1px solid #ccc; padding-bottom: 2px; transition: 0.3s; }
+        /* アンカーリンク周りの調整 */
+        .anchor-container { text-align: center; margin: 25px 0 40px 0; }
+        .anchor-text { font-size: 0.85rem; color: #666; margin-bottom: 8px; font-weight: bold; }
+        .anchor-link { font-size: 0.8rem; color: #888; text-decoration: none; border-bottom: 1px solid #ccc; padding-bottom: 2px; transition: 0.3s; display: inline-block; }
         .anchor-link:hover { color: var(--accent); border-color: var(--accent); }
 
         .container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 900px; }
@@ -61,7 +63,9 @@
         .preset-btn { padding: 5px 12px; background: #fff; border-radius: 15px; font-size: 0.7rem; border: 1px solid #ddd; cursor: pointer; transition: 0.2s; }
         .preset-btn.selected { background: #ffebee; border-color: var(--accent); color: var(--accent); transform: scale(1.05); }
 
-        .preview-section { width: 100%; max-width: 900px; margin-top: 50px; padding: 20px; border-top: 2px dashed #eee; text-align: center; }
+        /* プレビューエリアのデザイン */
+        .preview-section { width: 100%; max-width: 900px; margin-top: 50px; padding: 30px 20px; border-top: 2px dashed #eee; text-align: center; }
+        .preview-mode-tag { display: inline-block; padding: 6px 20px; border-radius: 20px; border: 2px solid var(--accent); color: var(--accent); font-weight: bold; font-size: 0.8rem; background: #fff0f3; margin-bottom: 15px; }
         .preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
         @media (min-width: 600px) { .preview-grid { grid-template-columns: repeat(6, 1fr); } }
         .mini-item { display: flex; flex-direction: column; align-items: center; min-height: 100px; justify-content: flex-start; }
@@ -100,7 +104,10 @@
         </div>
     </div>
 
-    <a href="#previewArea" class="anchor-link">⇣ プレビューはこちら</a>
+    <div class="anchor-container">
+        <div class="anchor-text">完了したら、プレビューを作成しましょう！</div>
+        <a href="#previewArea" class="anchor-link">⇣ プレビューはこちら</a>
+    </div>
 
     <div class="container" id="bottleContainer"></div>
 
@@ -124,7 +131,8 @@
     </div>
 
     <div class="preview-section" id="previewArea">
-        <button class="main-btn" style="background:#666" onclick="updatePreview()">プレビューを更新</button>
+        <div class="preview-mode-tag" id="previewModeTitle">2D / 二次元</div><br>
+        <button class="main-btn" style="background:#666; margin-bottom: 20px;" onclick="updatePreview()">プレビューを更新</button>
         <div class="preview-grid" id="previewGrid"></div>
     </div>
 
@@ -147,6 +155,8 @@
         function setTab(el) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             el.classList.add('active');
+            // プレビュー側のタイトルも同期
+            document.getElementById('previewModeTitle').innerText = el.innerText;
         }
 
         function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
@@ -180,7 +190,14 @@
 
         function init() {
             const params = new URLSearchParams(window.location.search).get('d');
-            if (params) { try { bottles = JSON.parse(decodeURIComponent(escape(atob(params)))); } catch (e) { console.error(e); } }
+            if (params) { 
+                try { bottles = JSON.parse(decodeURIComponent(escape(atob(params)))); } catch (e) { console.error(e); } 
+            } else {
+                const saved = localStorage.getItem('mySeihekiBin');
+                if (saved) {
+                    try { bottles = JSON.parse(saved); } catch (e) { console.error(e); }
+                }
+            }
             if (bottles.length === 0) bottles = [{ name: '首筋', color: PRESET_COLORS[0], level: 50, alpha: 0.8, locked: false }];
             
             PRESETS.forEach(p => {
@@ -204,7 +221,8 @@
         function setupSortable() {
             const el = document.getElementById('bottleContainer');
             Sortable.create(el, { handle: '.drag-handle', animation: 200, onEnd: () => {
-                const newB = []; document.querySelectorAll('.bottle-card').forEach(c => newB.push(bottles[c.dataset.index]));
+                const cards = document.querySelectorAll('.bottle-card');
+                const newB = []; cards.forEach(c => newB.push(bottles[c.dataset.index]));
                 bottles = newB; render();
             }});
         }
@@ -221,7 +239,7 @@
                     <div class="drag-handle">⠿</div>
                     <div class="lock-btn" onclick="toggleLock(${i})">${b.locked ? '🔒' : '🔓'}</div>
                     <div class="cap"></div>
-                    <input type="text" value="${b.name}" onchange="bottles[${i}].name=this.value" ${b.locked ? 'disabled' : ''}>
+                    <input type="text" value="${b.name}" onchange="bottles[${i}].name=this.value; saveToLocal();" ${b.locked ? 'disabled' : ''}>
                     <div style="display:flex;justify-content:center;gap:6px;margin-bottom:8px;">
                         ${PRESET_COLORS.map(c => `<div style="width:18px;height:18px;border-radius:50%;cursor:pointer;background:${c};border:${b.color===c?'2px solid #333':'2px solid transparent'}" onclick="updateColor(${i},'${c}')"></div>`).join('')}
                     </div>
@@ -239,7 +257,10 @@
                     <div class="delete-btn" onclick="removeBottle(${i})">🗑️</div>`;
                 container.appendChild(card);
             });
+            saveToLocal();
         }
+
+        function saveToLocal() { localStorage.setItem('mySeihekiBin', JSON.stringify(bottles)); }
 
         function updatePreview() {
             const grid = document.getElementById('previewGrid'); grid.innerHTML = '';
@@ -282,6 +303,7 @@
                 bottles[i].alpha = parseFloat(val);
                 const card = document.querySelector(`[data-index="${i}"]`);
                 if(card) card.querySelector('.liquid').style.opacity = val;
+                saveToLocal();
             }
         }
         function addBottle() { bottles.push({ name: '新項目', color: PRESET_COLORS[0], level: 0, alpha: 0.8, locked: false }); render(); }
