@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>性癖瓶 Ver.8.6</title>
+    <title>性癖瓶 Ver.8.8</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <style>
         :root { --bg: #fdfbfb; --accent: #ff4d79; --rule-color: #e63946; }
@@ -17,6 +17,7 @@
         .tab-btn { padding: 6px 18px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; cursor: pointer; border: 2px solid #ddd; color: #aaa; transition: 0.3s; background: white; }
         .tab-btn.active { border-color: var(--accent); color: var(--accent); background: #fff0f3; }
 
+        /* 赤枠部分：原文スタイル維持 */
         .rule-box { border: 2px solid var(--rule-color); background: #fff5f5; border-radius: 12px; padding: 15px; margin-bottom: 25px; max-width: 500px; width: 95%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .rule-box h2 { margin: 0 0 12px 0; font-size: 1rem; color: var(--rule-color); text-align: center; border-bottom: 1px dashed var(--rule-color); padding-bottom: 5px; }
         .color-guide { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
@@ -29,7 +30,6 @@
         @media (min-width: 600px) { .container { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; } }
 
         .bottle-card { background: white; border-radius: 15px; padding: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; position: relative; }
-        .bottle-card.locked { pointer-events: none; }
         .drag-handle { position: absolute; top: 12px; left: 10px; cursor: grab; font-size: 1.2rem; color: #ddd; z-index: 10; pointer-events: auto !important; }
         .lock-btn { position: absolute; top: 8px; right: 8px; cursor: pointer; font-size: 1.2rem; color: #ccc; z-index: 10; pointer-events: auto !important; }
 
@@ -48,11 +48,23 @@
         .controls { margin: 30px 0 0 0; display: flex; gap: 10px; }
         .main-btn { padding: 12px 24px; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; background: #333; color: white; transition: 0.2s; }
 
+        /* プリセットエリア */
         .preset-container { margin: 40px 0 60px 0; width: 95%; max-width: 500px; background: rgba(255,255,255,0.5); padding: 20px; border-radius: 20px; border: 1px solid #eee; }
+        .batch-toggle { font-size: 0.7rem; padding: 4px 10px; border-radius: 10px; border: 1px solid #ddd; background: white; cursor: pointer; margin-bottom: 15px; display: block; margin-left: auto; transition: 0.3s; }
+        .batch-toggle.active { background: var(--accent); color: white; border-color: var(--accent); }
         .preset-label { font-size: 0.75rem; color: #888; margin-top: 20px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: bold; }
         .preset-label::before, .preset-label::after { content: ""; height: 1px; flex-grow: 1; background: #ddd; }
         .preset-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-        .preset-btn { padding: 5px 12px; background: #fff; border-radius: 15px; font-size: 0.7rem; border: 1px solid #ddd; cursor: pointer; }
+        .preset-btn { padding: 5px 12px; background: #fff; border-radius: 15px; font-size: 0.7rem; border: 1px solid #ddd; cursor: pointer; transition: 0.2s; }
+        .preset-btn.selected { background: #ffebee; border-color: var(--accent); color: var(--accent); transform: scale(1.05); }
+
+        /* プレビュー */
+        .preview-section { width: 100%; max-width: 900px; margin-top: 50px; padding: 20px; border-top: 2px dashed #eee; text-align: center; }
+        .preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
+        @media (min-width: 600px) { .preview-grid { grid-template-columns: repeat(6, 1fr); } }
+        .mini-item { display: flex; flex-direction: column; align-items: center; }
+        .mini-bottle-wrap { scale: 0.6; height: 70px; margin-bottom: -10px; }
+        .mini-name { font-size: 0.65rem; font-weight: bold; color: #555; }
 
         .bubble { position: absolute; width: 4px; height: 4px; background: rgba(255, 255, 255, 0.5); border-radius: 50%; pointer-events: none; }
         @keyframes bubbleUp { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 0.5; } 100% { transform: translateY(-70px); opacity: 0; } }
@@ -94,6 +106,7 @@
     </div>
 
     <div class="preset-container">
+        <button class="batch-toggle" id="batchBtn" onclick="toggleBatchMode()">複数項目追加する</button>
         <div class="preset-label">身体・部位</div>
         <div class="preset-group" id="pre-1"></div>
         <div class="preset-label">髪型</div>
@@ -104,6 +117,11 @@
         <div class="preset-group" id="pre-4"></div>
         <div class="preset-label">行為・行動</div>
         <div class="preset-group" id="pre-5"></div>
+    </div>
+
+    <div class="preview-section">
+        <button class="main-btn" style="background:#666" onclick="updatePreview()">プレビューを更新</button>
+        <div class="preview-grid" id="previewGrid"></div>
     </div>
 
     <script>
@@ -117,6 +135,8 @@
         ];
         
         let bottles = [];
+        let selectedPresets = [];
+        let isBatchMode = false;
         let pressInterval = null;
         let audioCtx = null;
 
@@ -139,6 +159,21 @@
             osc.start(); osc.stop(audioCtx.currentTime + dur);
         }
 
+        function toggleBatchMode() {
+            isBatchMode = !isBatchMode;
+            const btn = document.getElementById('batchBtn');
+            if(isBatchMode) {
+                btn.innerText = "決定する"; btn.classList.add('active');
+            } else {
+                if(selectedPresets.length > 0) {
+                    selectedPresets.forEach(name => addPresetBottle(name, false));
+                    selectedPresets = []; render();
+                }
+                btn.innerText = "複数項目追加する"; btn.classList.remove('active');
+                document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('selected'));
+            }
+        }
+
         function init() {
             const params = new URLSearchParams(window.location.search).get('d');
             if (params) { try { bottles = JSON.parse(decodeURIComponent(escape(atob(params)))); } catch (e) { console.error(e); } }
@@ -146,15 +181,17 @@
             
             PRESETS.forEach(p => {
                 const group = document.getElementById(p.id);
-                if(group) {
-                    p.items.forEach(name => {
-                        const btn = document.createElement('div');
-                        btn.className = 'preset-btn';
-                        btn.innerText = name;
-                        btn.onclick = () => addPresetBottle(name);
-                        group.appendChild(btn);
-                    });
-                }
+                p.items.forEach(name => {
+                    const btn = document.createElement('div'); btn.className = 'preset-btn'; btn.innerText = name;
+                    btn.onclick = () => {
+                        if(isBatchMode) {
+                            btn.classList.toggle('selected');
+                            if(btn.classList.contains('selected')) selectedPresets.push(name);
+                            else selectedPresets = selectedPresets.filter(n => n !== name);
+                        } else { addPresetBottle(name); }
+                    };
+                    group.appendChild(btn);
+                });
             });
             render();
             setupSortable();
@@ -162,18 +199,10 @@
 
         function setupSortable() {
             const el = document.getElementById('bottleContainer');
-            Sortable.create(el, {
-                handle: '.drag-handle',
-                animation: 200,
-                onEnd: () => {
-                    const newBottles = [];
-                    document.querySelectorAll('.bottle-card').forEach(card => {
-                        newBottles.push(bottles[card.dataset.index]);
-                    });
-                    bottles = newBottles;
-                    render();
-                }
-            });
+            Sortable.create(el, { handle: '.drag-handle', animation: 200, onEnd: () => {
+                const newB = []; document.querySelectorAll('.bottle-card').forEach(c => newB.push(bottles[c.dataset.index]));
+                bottles = newB; render();
+            }});
         }
 
         function render() {
@@ -184,7 +213,6 @@
                 card.className = `bottle-card ${b.locked ? 'locked' : ''}`;
                 card.dataset.index = i;
                 let bubblesHTML = b.level > 5 ? `<div class="bubble" style="left:20%; bottom:0; animation: bubbleUp 3s linear infinite;"></div><div class="bubble" style="left:60%; bottom:0; animation: bubbleUp 4s linear 1s infinite;"></div>` : '';
-
                 card.innerHTML = `
                     <div class="drag-handle">⠿</div>
                     <div class="lock-btn" onclick="toggleLock(${i})">${b.locked ? '🔒' : '🔓'}</div>
@@ -203,15 +231,23 @@
                         <span style="font-size:0.75rem;font-weight:bold;width:35px;">${b.level}%</span>
                         <button class="p-btn" onmousedown="startPress(${i},2)" onmouseup="stopPress()" ontouchstart="startPress(${i},2)" ontouchend="stopPress()">＋</button>
                     </div>
-                    <input type="range" min="0.05" max="1" step="0.01" value="${b.alpha}" oninput="updateAlpha(${i},this.value)">
+                    <input type="range" min="0.05" max="1" step="0.01" value="${b.alpha}" oninput="updateAlpha(${i},this.value)" style="margin-top:10px;">
                     <div class="delete-btn" onclick="removeBottle(${i})">🗑️</div>`;
                 container.appendChild(card);
             });
         }
 
+        function updatePreview() {
+            const grid = document.getElementById('previewGrid'); grid.innerHTML = '';
+            bottles.forEach(b => {
+                const item = document.createElement('div'); item.className = 'mini-item';
+                item.innerHTML = `<div class="mini-bottle-wrap"><div class="bottle-frame"><div class="liquid" style="height:${b.level}%; background:${b.color}; opacity:${b.alpha};"></div></div></div><div class="mini-name">${b.name}</div>`;
+                grid.appendChild(item);
+            });
+        }
+
         function startPress(i, diff) {
-            initAudio();
-            if (bottles[i].locked) return;
+            initAudio(); if (bottles[i].locked) return;
             if (audioCtx.state === 'suspended') audioCtx.resume();
             if (pressInterval) return;
             pressInterval = setInterval(() => {
@@ -227,24 +263,20 @@
                 }
             }, 60);
         }
-
         function stopPress() { if (pressInterval) { clearInterval(pressInterval); pressInterval = null; playSound(600, 'triangle', 0.1, 0.03); render(); } }
+        function removeBottle(i) { bottles.splice(i, 1); render(); }
         function toggleLock(i) { bottles[i].locked = !bottles[i].locked; render(); }
         function updateColor(i, color) { if(!bottles[i].locked){ bottles[i].color = color; render(); } }
-        function updateAlpha(i, val) { bottles[i].alpha = parseFloat(val); if(!bottles[i].locked) render(); }
+        function updateAlpha(i, val) { bottles[i].alpha = parseFloat(val); }
         function addBottle() { bottles.push({ name: '新項目', color: PRESET_COLORS[0], level: 0, alpha: 0.8, locked: false }); render(); }
-        function addPresetBottle(name) { bottles.push({ name: name, color: PRESET_COLORS[0], level: 0, alpha: 0.8, locked: false }); render(); }
-        function removeBottle(i) { if(confirm(bottles[i].name + 'を削除しますか？')){ bottles.splice(i, 1); render(); } }
+        function addPresetBottle(name, shouldRender=true) { bottles.push({ name: name, color: PRESET_COLORS[0], level: 0, alpha: 0.8, locked: false }); if(shouldRender) render(); }
         
         function generateShareURL(e) { 
             const data = btoa(unescape(encodeURIComponent(JSON.stringify(bottles)))); 
             const url = window.location.origin + window.location.pathname + '?d=' + data; 
             navigator.clipboard.writeText(url).then(() => {
-                const btn = e.target;
-                const oldText = btn.innerText;
-                btn.innerText = "コピー完了！";
-                btn.style.background = "#4caf50";
-                setTimeout(() => { btn.innerText = oldText; btn.style.background = "#333"; }, 2000);
+                const b = e.target; b.innerText = "コピー完了！"; b.style.background = "#4caf50";
+                setTimeout(() => { b.innerText = "URLをコピー"; b.style.background = "#333"; }, 2000);
             }); 
         }
         init();
