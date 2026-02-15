@@ -10,7 +10,7 @@
         * { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; box-sizing: border-box; }
         input[type="text"] { -webkit-user-select: text; user-select: text; }
 
-        body { font-family: sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 15px; color: #444; margin: 0; }
+        body { font-family: sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 15px; color: #444; margin: 0; scroll-behavior: smooth; }
         .main-title { font-size: 1.6rem; font-weight: bold; margin: 20px 0 10px 0; color: #333; letter-spacing: 2px; }
 
         .mode-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
@@ -18,13 +18,17 @@
         .tab-btn.active { border-color: var(--accent); color: var(--accent); background: #fff0f3; }
 
         /* 赤枠部分：原文スタイル維持 */
-        .rule-box { border: 2px solid var(--rule-color); background: #fff5f5; border-radius: 12px; padding: 15px; margin-bottom: 25px; max-width: 500px; width: 95%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .rule-box { border: 2px solid var(--rule-color); background: #fff5f5; border-radius: 12px; padding: 15px; margin-bottom: 10px; max-width: 500px; width: 95%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .rule-box h2 { margin: 0 0 12px 0; font-size: 1rem; color: var(--rule-color); text-align: center; border-bottom: 1px dashed var(--rule-color); padding-bottom: 5px; }
         .color-guide { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
         .guide-item { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; font-weight: bold; }
         .color-chip { width: 18px; height: 18px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); }
         .usage-notes { font-size: 0.75rem; color: #666; border-top: 1px solid #eee; padding-top: 10px; line-height: 1.5; }
         .warning-note { color: var(--rule-color); font-weight: bold; margin-top: 5px; display: block; }
+
+        /* アンカーリンク用スタイル */
+        .anchor-link { font-size: 0.8rem; color: #888; text-decoration: none; margin-bottom: 25px; border-bottom: 1px solid #ccc; padding-bottom: 2px; transition: 0.3s; }
+        .anchor-link:hover { color: var(--accent); border-color: var(--accent); }
 
         .container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 900px; }
         @media (min-width: 600px) { .container { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; } }
@@ -58,11 +62,11 @@
         .preset-btn.selected { background: #ffebee; border-color: var(--accent); color: var(--accent); transform: scale(1.05); }
 
         .preview-section { width: 100%; max-width: 900px; margin-top: 50px; padding: 20px; border-top: 2px dashed #eee; text-align: center; }
-        .preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
+        .preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
         @media (min-width: 600px) { .preview-grid { grid-template-columns: repeat(6, 1fr); } }
-        .mini-item { display: flex; flex-direction: column; align-items: center; }
-        .mini-bottle-wrap { scale: 0.6; height: 70px; margin-bottom: -10px; }
-        .mini-name { font-size: 0.65rem; font-weight: bold; color: #555; }
+        .mini-item { display: flex; flex-direction: column; align-items: center; min-height: 100px; justify-content: flex-start; }
+        .mini-bottle-wrap { transform: scale(0.6); transform-origin: top center; height: 65px; margin-bottom: 5px; }
+        .mini-name { font-size: 0.65rem; font-weight: bold; color: #555; width: 100%; word-break: break-all; margin-top: 0; line-height: 1.2; }
 
         .bubble { position: absolute; width: 4px; height: 4px; background: rgba(255, 255, 255, 0.5); border-radius: 50%; pointer-events: none; }
         @keyframes bubbleUp { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 0.5; } 100% { transform: translateY(-70px); opacity: 0; } }
@@ -96,6 +100,8 @@
         </div>
     </div>
 
+    <a href="#previewArea" class="anchor-link">⇣ プレビューはこちら</a>
+
     <div class="container" id="bottleContainer"></div>
 
     <div class="controls">
@@ -117,7 +123,7 @@
         <div class="preset-group" id="pre-5"></div>
     </div>
 
-    <div class="preview-section">
+    <div class="preview-section" id="previewArea">
         <button class="main-btn" style="background:#666" onclick="updatePreview()">プレビューを更新</button>
         <div class="preview-grid" id="previewGrid"></div>
     </div>
@@ -235,6 +241,21 @@
             });
         }
 
+        function updatePreview() {
+            const grid = document.getElementById('previewGrid'); grid.innerHTML = '';
+            bottles.forEach(b => {
+                const item = document.createElement('div'); item.className = 'mini-item';
+                item.innerHTML = `
+                    <div class="mini-bottle-wrap">
+                        <div class="bottle-frame">
+                            <div class="liquid" style="height:${b.level}%; background:${b.color}; opacity:${b.alpha};"></div>
+                        </div>
+                    </div>
+                    <div class="mini-name">${b.name}</div>`;
+                grid.appendChild(item);
+            });
+        }
+
         function startPress(i, diff) {
             initAudio(); if (bottles[i].locked) return;
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -256,30 +277,15 @@
         function removeBottle(i) { bottles.splice(i, 1); render(); }
         function toggleLock(i) { bottles[i].locked = !bottles[i].locked; render(); }
         function updateColor(i, color) { if(!bottles[i].locked){ bottles[i].color = color; render(); } }
-        
-        /* バグ修正：スライダー値を即座に表示反映 */
         function updateAlpha(i, val) { 
             if(!bottles[i].locked) {
                 bottles[i].alpha = parseFloat(val);
                 const card = document.querySelector(`[data-index="${i}"]`);
-                if(card) {
-                    card.querySelector('.liquid').style.opacity = val;
-                }
+                if(card) card.querySelector('.liquid').style.opacity = val;
             }
         }
-
         function addBottle() { bottles.push({ name: '新項目', color: PRESET_COLORS[0], level: 0, alpha: 0.8, locked: false }); render(); }
         function addPresetBottle(name, shouldRender=true) { bottles.push({ name: name, color: PRESET_COLORS[0], level: 0, alpha: 0.8, locked: false }); if(shouldRender) render(); }
-        
-        function updatePreview() {
-            const grid = document.getElementById('previewGrid'); grid.innerHTML = '';
-            bottles.forEach(b => {
-                const item = document.createElement('div'); item.className = 'mini-item';
-                item.innerHTML = `<div class="mini-bottle-wrap"><div class="bottle-frame"><div class="liquid" style="height:${b.level}%; background:${b.color}; opacity:${b.alpha};"></div></div></div><div class="mini-name">${b.name}</div>`;
-                grid.appendChild(item);
-            });
-        }
-
         function generateShareURL(e) { 
             const data = btoa(unescape(encodeURIComponent(JSON.stringify(bottles)))); 
             const url = window.location.origin + window.location.pathname + '?d=' + data; 
