@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>性癖瓶 Ver.10.1 - Final Master</title>
+    <title>性癖瓶 Ver.10.2 - Complete Fix</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -18,7 +18,6 @@
         .tab-btn { padding: 6px 18px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; cursor: pointer; border: 2px solid #ddd; color: #aaa; transition: 0.3s; background: white; }
         .tab-btn.active { border-color: var(--accent); color: var(--accent); background: #fff0f3; }
 
-        /* 赤枠部分：原文スタイル完全維持 */
         .rule-box { border: 2px solid var(--rule-color); background: #fff5f5; border-radius: 12px; padding: 15px; margin-bottom: 10px; max-width: 500px; width: 95%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .rule-box h2 { margin: 0 0 12px 0; font-size: 1rem; color: var(--rule-color); text-align: center; border-bottom: 1px dashed var(--rule-color); padding-bottom: 5px; }
         .color-guide { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
@@ -27,54 +26,50 @@
         .usage-notes { font-size: 0.75rem; color: #666; border-top: 1px solid #eee; padding-top: 10px; line-height: 1.5; }
         .warning-note { color: var(--rule-color); font-weight: bold; margin-top: 5px; display: block; }
 
-        /* アンカーリンク周り：以前の調整を維持 */
         .anchor-container { text-align: center; margin: 25px 0 40px 0; }
         .anchor-text { font-size: 0.85rem; color: #666; margin-bottom: 8px; font-weight: bold; }
         .anchor-link { font-size: 0.8rem; color: #888; text-decoration: none; border-bottom: 1px solid #ccc; padding-bottom: 2px; transition: 0.3s; display: inline-block; }
-        .anchor-link:hover { color: var(--accent); border-color: var(--accent); }
 
-        .container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 900px; }
+        .container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 900px; min-height: 200px; }
         @media (min-width: 600px) { .container { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; } }
 
         .bottle-card { background: white; border-radius: 15px; padding: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; position: relative; }
-        .drag-handle { position: absolute; top: 12px; left: 10px; cursor: grab; font-size: 1.2rem; color: #ddd; z-index: 10; }
-        .lock-btn { position: absolute; top: 8px; right: 8px; cursor: pointer; font-size: 1.2rem; color: #ccc; z-index: 10; }
+        .drag-handle { position: absolute; top: 12px; left: 10px; cursor: grab; font-size: 1.2rem; color: #ddd; z-index: 10; pointer-events: auto !important; }
+        .lock-btn { position: absolute; top: 8px; right: 8px; cursor: pointer; font-size: 1.2rem; color: #ccc; z-index: 10; pointer-events: auto !important; }
 
-        input[type="text"] { width: 90%; border: none; border-bottom: 1px solid #eee; text-align: center; font-weight: bold; font-size: 0.85rem; background: transparent; margin: 15px 0 5px 0; color: #333 !important; }
-        .memo-input { width: 90%; border: none; font-size: 0.65rem; color: #888; text-align: center; background: #f9f9f9; border-radius: 4px; padding: 4px; margin-bottom: 8px; }
+        .bottle-card input[type="text"] { width: 90%; border: none; border-bottom: 1px solid #eee; text-align: center; font-weight: bold; font-size: 0.85rem; background: transparent; margin: 15px 0 5px 0; color: #333 !important; pointer-events: auto !important; }
+        .memo-input { width: 90% !important; border: none !important; font-size: 0.65rem !important; color: #888 !important; text-align: center !important; background: #f9f9f9 !important; border-radius: 4px; padding: 4px !important; margin-bottom: 8px !important; font-weight: normal !important; }
 
-        .bottle-frame { width: 60px; height: 90px; border: 3px solid #333; border-radius: 2px 2px 20px 20px; margin: 10px auto; position: relative; overflow: hidden; background: #f0f0f0; }
+        .bottle-frame { width: 60px; height: 90px; border: 3px solid #333; border-radius: 2px 2px 20px 20px; margin: 10px auto; position: relative; overflow: hidden; background: #f0f0f0; pointer-events: none; }
         .liquid { position: absolute; bottom: 0; width: 100%; transition: height 0.1s linear; }
         .cap { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 40px; height: 12px; background: #444; border-radius: 3px; z-index: 5; transition: 0.3s; }
         .locked .cap { top: 3px; }
 
-        .p-btn { width: 35px; height: 35px; border-radius: 50%; border: none; background: #eee; cursor: pointer; font-size: 1.2rem; }
-        input[type="range"] { width: 100%; cursor: pointer; accent-color: #666; }
+        .p-btn { width: 35px; height: 35px; border-radius: 50%; border: none; background: #eee; cursor: pointer; font-size: 1.2rem; pointer-events: auto !important; }
+        .bottle-card input[type="range"] { width: 100%; cursor: pointer; accent-color: #666; pointer-events: auto !important; }
 
-        .delete-btn { font-size: 1.1rem; color: #ffbcbc; cursor: pointer; margin-top: 12px; }
+        .delete-btn { font-size: 1.1rem; color: #ffbcbc; cursor: pointer; margin-top: 12px; pointer-events: auto !important; }
 
         .controls { margin: 30px 0 0 0; display: flex; gap: 10px; }
-        .main-btn { padding: 12px 24px; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; background: #333; color: white; transition: 0.2s; }
+        .main-btn { padding: 12px 24px; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; background: #333; color: white; transition: 0.2s; pointer-events: auto !important; }
 
         .preset-container { margin: 40px 0 60px 0; width: 95%; max-width: 500px; background: rgba(255,255,255,0.5); padding: 20px; border-radius: 20px; border: 1px solid #eee; }
         .batch-toggle { font-size: 0.7rem; padding: 4px 10px; border-radius: 10px; border: 1px solid #ddd; background: white; cursor: pointer; margin-bottom: 15px; display: block; margin-left: auto; transition: 0.3s; }
         .batch-toggle.active { background: var(--accent); color: white; border-color: var(--accent); }
-        .preset-label { font-size: 0.75rem; color: #888; margin-top: 20px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: bold; }
-        .preset-label::before, .preset-label::after { content: ""; height: 1px; flex-grow: 1; background: #ddd; }
         .preset-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
         .preset-btn { padding: 5px 12px; background: #fff; border-radius: 15px; font-size: 0.7rem; border: 1px solid #ddd; cursor: pointer; transition: 0.2s; }
         .preset-btn.selected { background: #ffebee; border-color: var(--accent); color: var(--accent); transform: scale(1.05); }
+        .preset-label { font-size: 0.75rem; color: #888; margin: 20px 0 10px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: bold; }
+        .preset-label::before, .preset-label::after { content: ""; height: 1px; flex-grow: 1; background: #ddd; }
 
-        /* プレビューエリア：画像保存用のラッピング */
         .preview-section { width: 100%; max-width: 900px; margin-top: 50px; padding: 30px 20px; border-top: 2px dashed #eee; text-align: center; }
-        .preview-capture-area { background: #fff; padding: 30px 15px; border-radius: 20px; border: 1px solid #fafafa; }
+        .preview-capture-area { background: #fff; padding: 30px 15px; border-radius: 20px; }
         .preview-mode-tag { display: inline-block; padding: 4px 16px; border-radius: 20px; border: 1px solid var(--accent); color: var(--accent); font-weight: bold; font-size: 0.7rem; background: #fff0f3; margin-top: 12px; }
         .preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 25px; }
         @media (min-width: 600px) { .preview-grid { grid-template-columns: repeat(6, 1fr); } }
-        .mini-item { display: flex; flex-direction: column; align-items: center; min-height: 120px; justify-content: flex-start; }
-        .mini-bottle-wrap { transform: scale(0.6); transform-origin: top center; height: 65px; margin-bottom: 5px; }
-        .mini-name { font-size: 0.65rem; font-weight: bold; color: #333; width: 100%; word-break: break-all; margin-top: 0; line-height: 1.2; }
-        .mini-memo { font-size: 0.5rem; color: #999; width: 100%; margin-top: 2px; line-height: 1.1; padding: 0 4px; }
+        .mini-item { display: flex; flex-direction: column; align-items: center; min-height: 120px; }
+        .mini-name { font-size: 0.65rem; font-weight: bold; color: #333; width: 100%; margin-top: 5px; }
+        .mini-memo { font-size: 0.5rem; color: #999; width: 100%; margin-top: 2px; line-height: 1.1; }
 
         .bubble { position: absolute; width: 4px; height: 4px; background: rgba(255, 255, 255, 0.5); border-radius: 50%; pointer-events: none; }
         @keyframes bubbleUp { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 0.5; } 100% { transform: translateY(-70px); opacity: 0; } }
@@ -98,13 +93,9 @@
             <div class="guide-item"><div class="color-chip" style="background: #6366f1;"></div><span>青色：嫌い / 苦手 / 地雷</span></div>
         </div>
         <div class="usage-notes">
-            ・<strong>量:</strong> ボタン長押しで注入。プラスとマイナスボタンで調整してください。<br>
-            ・<strong>濃度:</strong> 下のバーで本気度（不透明度）を調整してください。<br>
+            ・<strong>量:</strong> ボタン長押しで注入。プラスとマイナスボタンで調整。<br>
             ・<strong>一言メモ:</strong> 各瓶にこだわりを書き込めます。<br>
-            ・<strong>並び替え:</strong> 左上の「⠿」をドラッグして順番を入れ替えられます。<br>
-            ・<strong>保存:</strong> 右上の「🔓」で内容をロックできます。<br>
-            ・<strong>共有:</strong> 『URLをコピー』して自分だけの性癖瓶を共有しましょう！<br>
-            <span class="warning-note">⚠️ 音が出ます。周囲に注意してください。</span>
+            ・<strong>画像保存:</strong> 下部の「画像を保存する」で1枚の画像に！
         </div>
     </div>
 
@@ -134,9 +125,9 @@
             <button class="main-btn" id="previewBtn" style="background:#666" onclick="updatePreview()">プレビューを更新</button><br>
             <div class="preview-mode-tag" id="previewModeTitle">2D / 二次元</div>
             <div class="preview-grid" id="previewGrid"></div>
-            <div style="font-size:0.55rem; color:#ddd; margin-top:25px; letter-spacing: 1px;">#性癖瓶 #あなただけの性癖瓶</div>
+            <div style="font-size:0.5rem; color:#ddd; margin-top:20px;">#性癖瓶 #あなただけの性癖瓶</div>
         </div>
-        <button class="main-btn" style="background:var(--accent); margin-top:25px; box-shadow: 0 4px 15px rgba(255,77,121,0.3);" onclick="saveAsImage()">画像を保存する</button>
+        <button class="main-btn" style="background:var(--accent); margin-top:20px;" onclick="saveAsImage()">画像を保存する</button>
     </div>
 
     <script>
@@ -181,7 +172,9 @@
                 const saved = localStorage.getItem('mySeihekiBin');
                 if (saved) try { bottles = JSON.parse(saved); } catch (e) {}
             }
-            if (bottles.length === 0) bottles = [{ name: '首筋', memo: '', color: PRESET_COLORS[0], level: 50, alpha: 0.8, locked: false }];
+            if (!bottles || bottles.length === 0) {
+                bottles = [{ name: '首筋', memo: '', color: PRESET_COLORS[0], level: 50, alpha: 0.8, locked: false }];
+            }
             
             PRESETS.forEach(p => {
                 const group = document.getElementById(p.id);
@@ -226,9 +219,9 @@
                     <div class="lock-btn" onclick="toggleLock(${i})">${b.locked ? '🔒' : '🔓'}</div>
                     <div class="cap"></div>
                     <input type="text" value="${b.name}" onchange="bottles[${i}].name=this.value; saveToLocal();" ${b.locked ? 'disabled' : ''}>
-                    <input type="text" class="memo-input" placeholder="メモを入力..." value="${b.memo}" onchange="bottles[${i}].memo=this.value; saveToLocal();" ${b.locked ? 'disabled' : ''}>
+                    <input type="text" class="memo-input" placeholder="こだわりをメモ..." value="${b.memo}" onchange="bottles[${i}].memo=this.value; saveToLocal();" ${b.locked ? 'disabled' : ''}>
                     <div style="display:flex;justify-content:center;gap:6px;margin-bottom:8px;">
-                        ${PRESET_COLORS.map(c => `<div style="width:16px;height:16px;border-radius:50%;cursor:pointer;background:${c};border:${b.color===c?'2px solid #333':'2px solid transparent'}" onclick="updateColor(${i},'${c}')"></div>`).join('')}
+                        ${PRESET_COLORS.map(c => `<div style="width:18px;height:18px;border-radius:50%;cursor:pointer;background:${c};border:${b.color===c?'2px solid #333':'2px solid transparent'}" onclick="updateColor(${i},'${c}')"></div>`).join('')}
                     </div>
                     <div class="bottle-frame">
                         <div class="liquid" style="height:${b.level}%; background:${b.color}; opacity:${b.alpha};">
@@ -266,12 +259,60 @@
         function saveAsImage() {
             updatePreview();
             const previewBtn = document.getElementById('previewBtn');
-            previewBtn.style.visibility = 'hidden'; // 画像に含めない
-            
+            previewBtn.style.visibility = 'hidden';
             const area = document.getElementById('captureArea');
             html2canvas(area, { backgroundColor: "#ffffff", scale: 2 }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = `seiheki_bin_${new Date().getTime()}.png`;
                 link.href = canvas.toDataURL();
                 link.click();
-                previewBtn
+                previewBtn.style.visibility = 'visible';
+            });
+        }
+
+        function startPress(i, diff) {
+            initAudio(); if (bottles[i].locked) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            if (pressInterval) return;
+            pressInterval = setInterval(() => {
+                let old = bottles[i].level;
+                bottles[i].level = Math.max(0, Math.min(100, bottles[i].level + diff));
+                if (old !== bottles[i].level) {
+                    playSound(150 + Math.random()*15, 'sine', 0.05, 0.015);
+                    const card = document.querySelector(`[data-index="${i}"]`);
+                    if(card) {
+                        card.querySelector('.liquid').style.height = bottles[i].level + '%';
+                        card.querySelector('span').innerText = bottles[i].level + '%';
+                    }
+                }
+            }, 60);
+        }
+        function stopPress() { if (pressInterval) { clearInterval(pressInterval); pressInterval = null; saveToLocal(); render(); } }
+        function removeBottle(i) { bottles.splice(i, 1); render(); }
+        function toggleLock(i) { bottles[i].locked = !bottles[i].locked; render(); }
+        function updateColor(i, color) { if(!bottles[i].locked){ bottles[i].color = color; render(); } }
+        function updateAlpha(i, val) { if(!bottles[i].locked) { bottles[i].alpha = parseFloat(val); saveToLocal(); } }
+        function addBottle() { bottles.push({ name: '新項目', memo: '', color: PRESET_COLORS[0], level: 0, alpha: 0.8, locked: false }); render(); }
+        function addPresetBottle(name, shouldRender=true) { bottles.push({ name: name, memo: '', color: PRESET_COLORS[0], level: 0, alpha: 0.8, locked: false }); if(shouldRender) render(); }
+        function toggleBatchMode() {
+            isBatchMode = !isBatchMode;
+            const btn = document.getElementById('batchBtn');
+            if(isBatchMode) { btn.innerText = "決定する"; btn.classList.add('active'); }
+            else {
+                if(selectedPresets.length > 0) { selectedPresets.forEach(name => addPresetBottle(name, false)); selectedPresets = []; render(); }
+                btn.innerText = "複数項目追加する"; btn.classList.remove('active');
+                document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('selected'));
+            }
+        }
+        function generateShareURL(e) { 
+            const data = btoa(unescape(encodeURIComponent(JSON.stringify(bottles)))); 
+            const url = window.location.origin + window.location.pathname + '?d=' + data; 
+            navigator.clipboard.writeText(url).then(() => {
+                const b = e.target; b.innerText = "コピー完了！";
+                setTimeout(() => { b.innerText = "URLをコピー"; }, 2000);
+            }); 
+        }
+        init();
+    </script>
+</body>
+</html>
