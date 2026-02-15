@@ -17,11 +17,15 @@
         .tab-btn { padding: 6px 18px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; cursor: pointer; border: 2px solid #ddd; color: #aaa; transition: 0.3s; background: white; }
         .tab-btn.active { border-color: var(--accent); color: var(--accent); background: #fff0f3; }
 
-        /* 赤枠内のデザイン変更 */
+        /* 赤枠内のデザイン */
         .rule-box { border: 2px solid var(--rule-color); background: #fff5f5; border-radius: 12px; padding: 15px; margin-bottom: 10px; max-width: 500px; width: 95%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .rule-box h2 { margin: 0 0 15px 0; font-size: 1rem; color: var(--rule-color); text-align: center; border-bottom: 1px dashed var(--rule-color); padding-bottom: 8px; }
         
-        .rule-sub-title { display: block; width: fit-content; margin: 12px auto 6px auto; padding: 2px 12px; background: var(--sub-bg); color: #666; font-size: 0.7rem; font-weight: bold; border-radius: 4px; border: 1px solid #ddd; }
+        /* アンカーリンク用の設定 */
+        .rule-anchor { text-decoration: none; display: block; width: fit-content; margin: 12px auto 6px auto; }
+        .rule-sub-title { display: block; padding: 2px 12px; background: var(--sub-bg); color: #666; font-size: 0.7rem; font-weight: bold; border-radius: 4px; border: 1px solid #ddd; cursor: pointer; transition: 0.2s; }
+        .rule-sub-title:hover { opacity: 0.7; }
+        
         .rule-text { font-size: 0.75rem; color: #555; text-align: center; line-height: 1.6; margin-bottom: 5px; }
 
         .color-guide { display: flex; justify-content: center; gap: 12px; margin: 10px 0; flex-wrap: wrap; }
@@ -30,7 +34,7 @@
         
         .warning-note { color: var(--rule-color); font-weight: bold; font-size: 0.7rem; text-align: center; margin-top: 10px; display: block; border-top: 1px solid #eee; padding-top: 8px; }
 
-        .container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 900px; min-height: 100px; margin-top: 20px; }
+        .container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 900px; min-height: 100px; margin-top: 20px; scroll-margin-top: 20px; }
         @media (min-width: 600px) { .container { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; } }
 
         .bottle-card { background: white; border-radius: 15px; padding: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; position: relative; }
@@ -60,7 +64,7 @@
         .preset-label { font-size: 0.75rem; color: #888; margin: 15px 0 8px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: bold; }
         .preset-label::before, .preset-label::after { content: ""; height: 1px; flex-grow: 1; background: #ddd; }
 
-        .preview-section { width: 100%; max-width: 900px; margin-top: 50px; padding: 30px 20px; border-top: 2px dashed #eee; text-align: center; }
+        .preview-section { width: 100%; max-width: 900px; margin-top: 50px; padding: 30px 20px; border-top: 2px dashed #eee; text-align: center; scroll-margin-top: 20px; }
         .preview-capture-area { background: #fff; padding: 30px 15px; border-radius: 20px; display: inline-block; width: 100%; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
         .preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
         @media (min-width: 600px) { .preview-grid { grid-template-columns: repeat(6, 1fr); } }
@@ -88,16 +92,16 @@
             <div class="guide-item"><div class="color-chip" style="background: #6366f1;"></div><span>青色：苦手</span></div>
         </div>
 
-        <span class="rule-sub-title">量</span>
+        <a href="#bottleContainer" class="rule-anchor"><span class="rule-sub-title">量</span></a>
         <p class="rule-text">ボタン長押しで注入。＋－で微調整可。</p>
 
-        <span class="rule-sub-title">濃度</span>
+        <a href="#bottleContainer" class="rule-anchor"><span class="rule-sub-title">濃度</span></a>
         <p class="rule-text">下のスライダーで「本気度」を調整。</p>
 
-        <span class="rule-sub-title">こだわり</span>
+        <a href="#bottleContainer" class="rule-anchor"><span class="rule-sub-title">こだわり</span></a>
         <p class="rule-text">各瓶に一言メモを自由に書き込めます。</p>
 
-        <span class="rule-sub-title">保存・共有</span>
+        <a href="#previewArea" class="rule-anchor"><span class="rule-sub-title">保存・共有</span></a>
         <p class="rule-text">下部のプレビューをスクショしてください！<br>または、URLコピーで今の瓶を共有できます。</p>
 
         <span class="warning-note">⚠️ 音が出ます。周囲に注意してください。</span>
@@ -131,12 +135,12 @@
 
     <script>
         const PRESET_COLORS = ['#ff5d8f', '#94a3b8', '#6366f1'];
-        const PRESETS = [ 
-            {id:'pre-1', items:['長身','小柄','モデル体型','日焼け','褐色','貧乳・微乳','巨乳','お尻','手','生足・太もも','おへそ','背中','そばかす']}, 
-            {id:'pre-2', items:['ショートヘア','ロングヘア','ボブヘア','ポニーテール','ツインテール','お団子ヘア','ウルフカット','インナーカラー','ぱっつん','三つ編み','シースルーバング','デコ出し']}, 
-            {id:'pre-3', items:['体格差','主従関係','密室','コスプレ','お漏らし','先生と生徒','NTR','野外・露出','幼馴染','同い年','背徳感','制服']}, 
-            {id:'pre-4', items:['ロリ','ショタ','お姉さん','妹・姉','ギャル','メスガキ','清楚','清楚ビッチ','無口','クーデレ','地雷系','TS','ツンデレ','天然・ドジっ子','小悪魔','ギャップ萌え','外国人・ハーフ','男の娘','眼鏡女子','オタク女子','強気・男勝り','スポーツ女子','高学歴女子','一人称名前']}, 
-            {id:'pre-5', items:['ローション・オイル','汗','あくび','くしゃみ','焦らし','指舐め','声','囁き・耳攻め','首絞め','命令','催眠','目隠し','緊縛','放置','拘束','M','S','キス','ハグ']} 
+        const PRESETS = [ 
+            {id:'pre-1', items:['長身','小柄','モデル体型','日焼け','褐色','貧乳・微乳','巨乳','お尻','手','生足・太もも','おへそ','背中','そばかす']}, 
+            {id:'pre-2', items:['ショートヘア','ロングヘア','ボブヘア','ポニーテール','ツインテール','お団子ヘア','ウルフカット','インナーカラー','ぱっつん','三つ編み','シースルーバング','デコ出し']}, 
+            {id:'pre-3', items:['体格差','主従関係','密室','コスプレ','お漏らし','先生と生徒','NTR','野外・露出','幼馴染','同い年','背徳感','制服']}, 
+            {id:'pre-4', items:['ロリ','ショタ','お姉さん','妹・姉','ギャル','メスガキ','清楚','清楚ビッチ','無口','クーデレ','地雷系','TS','ツンデレ','天然・ドジっ子','小悪魔','ギャップ萌え','外国人・ハーフ','男の娘','眼鏡女子','オタク女子','強気・男勝り','スポーツ女子','高学歴女子','一人称名前']}, 
+            {id:'pre-5', items:['ローション・オイル','汗','あくび','くしゃみ','焦らし','指舐め','声','囁き・耳攻め','首絞め','命令','催眠','目隠し','緊縛','放置','拘束','M','S','キス','ハグ']} 
         ];
         
         let bottles = [];
