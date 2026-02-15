@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>性癖瓶 Ver.8.4</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <style>
+        :root { --bg: #fdfbfb; --accent: #ff4d79; --rule-color: #e63946; }
+        * { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; box-sizing: border-box; }
+        input[type="text"] { -webkit-user-select: text; user-select: text; }
+
+        body { font-family: sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 15px; color: #444; margin: 0; }
+        .main-title { font-size: 1.6rem; font-weight: bold; margin: 20px 0 10px 0; color: #333; letter-spacing: 2px; }
+
+        .mode-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+        .tab-btn { padding: 6px 18px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; cursor: pointer; border: 2px solid #ddd; color: #aaa; transition: 0.3s; background: white; }
+        .tab-btn.active { border-color: var(--accent); color: var(--accent); background: #fff0f3; }
+
+        .rule-box { border: 2px solid var(--rule-color); background: #fff5f5; border-radius: 12px; padding: 15px; margin-bottom: 25px; max-width: 500px; width: 95%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .rule-box h2 { margin: 0 0 12px 0; font-size: 1rem; color: var(--rule-color); text-align: center; border-bottom: 1px dashed var(--rule-color); padding-bottom: 5px; }
+        .color-guide { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+        .guide-item { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; font-weight: bold; }
+        .color-chip { width: 18px; height: 18px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); }
+        .usage-notes { font-size: 0.75rem; color: #666; border-top: 1px solid #eee; padding-top: 10px; line-height: 1.5; }
+        .warning-note { color: var(--rule-color); font-weight: bold; margin-top: 5px; display: block; }
+
+        .container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 900px; }
+        @media (min-width: 600px) { .container { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; } }
+
+        .bottle-card { background: white; border-radius: 15px; padding: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; position: relative; }
+        .bottle-card.locked { pointer-events: none; }
+        .drag-handle { position: absolute; top: 12px; left: 10px; cursor: grab; font-size: 1.2rem; color: #ddd; z-index: 10; pointer-events: auto !important; }
+        .lock-btn { position: absolute; top: 8px; right: 8px; cursor: pointer; font-size: 1.2rem; color: #ccc; z-index: 10; pointer-events: auto !important; }
+
+        input[type="text"] { width: 85%; border: none; border-bottom: 1px solid #ddd; text-align: center; font-weight: bold; font-size: 0.85rem; background: transparent; margin: 15px 0 8px 0; color: #333 !important; }
+
+        .bottle-frame { width: 60px; height: 90px; border: 3px solid #333; border-radius: 2px 2px 20px 20px; margin: 10px auto; position: relative; overflow: hidden; background: #f0f0f0; }
+        .liquid { position: absolute; bottom: 0; width: 100%; transition: height 0.1s linear; }
+        .cap { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 40px; height: 12px; background: #444; border-radius: 3px; z-index: 5; transition: 0.3s; }
+        .locked .cap { top: 3px; }
+
+        .p-btn { width: 35px; height: 35px; border-radius: 50%; border: none; background: #eee; cursor: pointer; font-size: 1.2rem; }
+        input[type="range"] { width: 100%; cursor: pointer; accent-color: #666; pointer-events: auto !important; }
+
+        .delete-btn { font-size: 1.1rem; color: #ffbcbc; cursor: pointer; margin-top: 12px; pointer-events: auto !important; }
+
+        .controls { margin: 30px 0 0 0; display: flex; gap: 10px; }
+        .main-btn { padding: 12px 24px; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; background: #333; color: white; transition: 0.2s; }
+
+        .preset-container { margin: 40px 0 60px 0; width: 95%; max-width: 500px; background: rgba(255,255,255,0.5); padding: 20px; border-radius: 20px; border: 1px solid #eee; }
+        .preset-label { font-size: 0.75rem; color: #888; margin-top: 20px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: bold; }
+        .preset-label::before, .preset-label::after { content: ""; height: 1px; flex-grow: 1; background: #ddd; }
+        .preset-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+        .preset-btn { padding: 5px 12px; background: #fff; border-radius: 15px; font-size: 0.7rem; border: 1px solid #ddd; cursor: pointer; }
+
+        .bubble { position: absolute; width: 4px; height: 4px; background: rgba(255, 255, 255, 0.5); border-radius: 50%; pointer-events: none; }
+        @keyframes bubbleUp { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 0.5; } 100% { transform: translateY(-70px); opacity: 0; } }
+        .wave { position: absolute; top: -3px; left: 0; width: 200%; height: 6px; background: rgba(255, 255, 255, 0.2); border-radius: 40%; animation: waveFlow 4s linear infinite; }
+        @keyframes waveFlow { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+    <div class="main-title">【あなただけの性癖瓶】</div>
+
+    <div class="mode-tabs">
+        <div class="tab-btn active" onclick="setTab(this)">2D / 二次元</div>
+        <div class="tab-btn" onclick="setTab(this)">Real / 現実</div>
+    </div>
+
+    <div class="rule-box">
+        <h2>◀︎ 性癖瓶のルール ▶︎</h2>
+        <div class="color-guide">
+            <div class="guide-item"><div class="color-chip" style="background: #ff5d8f;"></div><span>ピンク：好き / 執着 / 興奮</span></div>
+            <div class="guide-item"><div class="color-chip" style="background: #94a3b8;"></div><span>グレー：無関心 / 微妙</span></div>
+            <div class="guide-item"><div class="color-chip" style="background: #6366f1;"></div><span>青色：嫌い / 苦手 / 地雷</span></div>
+        </div>
+        <div class="usage-notes">
+            ・<strong>量:</strong> ボタン長押しで注入。プラスとマイナスボタンで調整してください。<br>
+            ・<strong>濃度:</strong> 下のバーで本気度（不透明度）を調整してください。<br>
+            ・<strong>瓶の追加:</strong> 『自由に追加』または『下部のプリセット』から自由に追加ができます。<br>
+            ・<strong>並び替え:</strong> 左上の「⠿」をドラッグして順番を入れ替えられます。<br>
+            ・<strong>保存:</strong> 右上の「🔓」で内容をロックできます。<br>
+            ・<strong>共有:</strong> 『URLをコピー』して自分だけの性癖瓶を共有しましょう！<br>
+            <span class="warning-note">⚠️ 音が出ます。周囲に注意してください。</span>
+        </div>
+    </div>
+
+    <div class="container" id="bottleContainer"></div>
+
+    <div class="controls">
+        <button class="main-btn" style="background:var(--accent)" onclick="addBottle()">自由に追加</button>
+        <button class="main-btn" onclick="generateShareURL(event)">URLをコピー</button>
+    </div>
+
+    <div class="preset-container">
+        <div class="preset-label">部位・身体</div>
+        <div class="preset-group" id="pre-1"></div>
+        <div class="preset-label">関係・シチュ</div>
+        <div class="preset-group" id="pre-2"></div>
+        <div class="preset-label">性向・属性</div>
+        <div class="preset-group" id="pre-3"></div>
+        <div class="preset-label">行為・行動</div>
+        <div class="preset-group" id="pre-4"></div>
+        <div class="preset-label">タイプ</div>
+        <div class="preset-group" id="pre-5"></div>
+    </div>
+
+    <script>
+        const PRESET_COLORS = ['#ff5d8f', '#94a3b8', '#6366f1'];
+        const PRESETS = [
+            {id:'pre-1', items:['長身','日焼け・褐色','貧乳・微乳','巨乳','お尻']},
+            {id:'pre-2', items:['体格差','主従','密室','コスプレ','お漏らし']},
+            {id:'pre-3', items:['ロリ','ショタ','お姉さん','妹・姉','幼馴染','ギャル','TS','ツンデレ','同い年','ローション・オイル','汗','小悪魔']},
+            {id:'pre-4', items:['あくび','くしゃみ','声','首絞め','踏みつけ','命令','目隠し','放置','拘束','緊縛','NTR','野外・露出','キス','ハグ','催眠']},
+            {id:'pre-5', items:['外国人・ハーフ','男の娘']}
+        ];
+        
+        let bottles = [];
+        let pressInterval = null;
+        let audioCtx = null;
+
+        function setTab(el) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+        
+        function playSound(freq, type, dur, vol) {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + dur);
+        }
+
+        function init() {
+            const params = new URLSearchParams(window.location.search).get('d');
+            if (params) { try { bottles = JSON.parse(decodeURIComponent(escape(atob(params)))); } catch (e) { console.error(e); } }
+            if (bottles.length === 0) bottles = [{ name: '首筋', color: PRESET_COLORS[0], level: 50, alpha: 0.8, locked: false }];
+            
+            PRESETS.forEach(p => {
+                const group = document.getElementById(p.id);
+                if(group) {
+                    p.items.forEach(name => {
+                        if(name) {
+                            const btn = document.createElement('div');
+                            btn.className = 'preset-btn';
+                            btn.innerText = name;
+                            btn.onclick = () => addPresetBottle(name);
+                            group.appendChild(btn);
+                        }
+                    });
+                }
+            });
+            render();
+            setupSortable();
+        }
+
+        function setupSortable() {
+            const el = document.getElementById('bottleContainer');
+            Sortable.create(el, {
+                handle: '.drag-handle',
+                animation: 200,
+                onEnd: () => {
+                    const newBottles = [];
+                    document.querySelectorAll('.bottle-card').forEach(card => {
+                        newBottles.push(bottles[card.dataset.index]);
+                    });
+                    bottles = newBottles;
+                    render();
+                }
+            });
+        }
+
+        function render() {
+            const container = document.getElementById('bottleContainer');
+            container.innerHTML = '';
+            bottles.forEach((b, i) => {
+                const card = document.createElement('div');
+                card.className = `bottle-card ${b.locked ? 'locked' : ''}`;
+                card.dataset.index = i;
+                let bubblesHTML = b.level > 5 ? `<div class="bubble" style="left:20%; bottom:0; animation: bubbleUp 3s linear infinite;"></div><div class="bubble" style="left:60%; bottom:0; animation: bubbleUp 4s linear 1s infinite;"></div>` : '';
+
+                card.innerHTML = `
+                    <div class="drag-handle">⠿</div>
+                    <div class="lock-btn" onclick="toggleLock(${i})">${b.locked ? '🔒' : '🔓'}</div>
+                    <div class="cap"></div>
+                    <input type="text" value="${b.name}" onchange="bottles[${i}].name=this.value" ${b.locked ? 'disabled' : ''}>
+                    <div style="display:flex;justify-content:center;gap:6px;margin-bottom:8px;">
+                        ${PRESET_COLORS.map(c => `<div style="width:18px;height:18px;border-radius:50%;cursor:pointer;background:${c};border:${b.color===c?'2px solid #333':'2px solid transparent'}" onclick="updateColor(${i},'${c}')"></div>`).join('')}
+                    </div>
+                    <div class="bottle-frame">
+                        <div class="liquid" style="height:${b.level}%; background:${b.color}; opacity:${b.alpha};">
+                            <div class="wave"></div>${bubblesHTML}
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;justify-content:center;gap:5px;">
+                        <button class="p-btn" onmousedown="startPress(${i},-2)" onmouseup="stopPress()" ontouchstart="startPress(${i},-2)" ontouchend="stopPress()">ー</button>
+                        <span style="font-size:0.75rem;font-weight:bold;width:35px;">${b.level}%</span>
+                        <button class="p-btn" onmousedown="startPress(${i},2)" onmouseup="stopPress()" ontouchstart="startPress(${i},2)" ontouchend="stopPress()">＋</button>
+                    </div>
+                    <input type="range" min="0.05" max="1" step="0.01" value="${b.alpha}" oninput="updateAlpha(${i},this.value)">
+                    <div class="delete-btn" onclick="removeBottle(${i})">🗑️</div>`;
+                container.appendChild(card);
+            });
+        }
+
+        function startPress(i, diff) {
+            initAudio();
+            if (bottles[i].locked) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            if (pressInterval) return;
+            pressInterval = setInterval(() => {
+                let old = bottles[i].level;
+                bottles[i].level = Math.max(0, Math.min(100, bottles[i].level + diff));
+                if (old !== bottles[i].level) {
+                    playSound(150 + Math.random()*15, 'sine', 0.05, 0.015);
+                    const card = document.querySelector(`[data-index="${i}"]`);
+                    if(card) {
+                        card.querySelector('.liquid').style.height = bottles[i].level + '%';
+                        card.querySelector('span').innerText = bottles[i].level + '%';
+                    }
+                }
+            }, 60);
+        }
+
+        function stopPress() { if (pressInterval) { clearInterval(pressInterval); pressInterval = null; playSound(600, 'triangle', 0.1, 0.03); render(); } }
+        function toggleLock(i) { bottles[i].locked = !bottles[i].locked; render(); }
+        function updateColor(i, color) { if(!bottles[i].locked){ bottles[i].color = color; render(); } }
+        function updateAlpha(i, val) { bottles[i].alpha = parseFloat(val); if(!bottles[i].locked) render(); }
+        function addBottle() { bottles.push({ name: '新項目', color: PRESET_COLORS[0], level: 0, alpha: 0.8, locked: false }); render(); }
+        function addPresetBottle(name) { bottles.push({ name: name, color: PRESET_COLORS[0], level: 0, alpha: 0.8, locked: false }); render(); }
+        function removeBottle(i) { if(confirm(bottles[i].name + 'を削除しますか？')){ bottles.splice(i, 1); render(); } }
+        
+        function generateShareURL(e) { 
+            const data = btoa(unescape(encodeURIComponent(JSON.stringify(bottles)))); 
+            const url = window.location.origin + window.location.pathname + '?d=' + data; 
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = e.target;
+                const oldText = btn.innerText;
+                btn.innerText = "コピー完了！";
+                btn.style.background = "#4caf50";
+                setTimeout(() => { btn.innerText = oldText; btn.style.background = "#333"; }, 2000);
+            }); 
+        }
+        init();
+    </script>
+</body>
+</html>
