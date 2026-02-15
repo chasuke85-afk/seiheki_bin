@@ -48,7 +48,6 @@
         .controls { margin: 30px 0 0 0; display: flex; gap: 10px; }
         .main-btn { padding: 12px 24px; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; background: #333; color: white; transition: 0.2s; }
 
-        /* プリセットエリア */
         .preset-container { margin: 40px 0 60px 0; width: 95%; max-width: 500px; background: rgba(255,255,255,0.5); padding: 20px; border-radius: 20px; border: 1px solid #eee; }
         .batch-toggle { font-size: 0.7rem; padding: 4px 10px; border-radius: 10px; border: 1px solid #ddd; background: white; cursor: pointer; margin-bottom: 15px; display: block; margin-left: auto; transition: 0.3s; }
         .batch-toggle.active { background: var(--accent); color: white; border-color: var(--accent); }
@@ -58,7 +57,6 @@
         .preset-btn { padding: 5px 12px; background: #fff; border-radius: 15px; font-size: 0.7rem; border: 1px solid #ddd; cursor: pointer; transition: 0.2s; }
         .preset-btn.selected { background: #ffebee; border-color: var(--accent); color: var(--accent); transform: scale(1.05); }
 
-        /* プレビュー */
         .preview-section { width: 100%; max-width: 900px; margin-top: 50px; padding: 20px; border-top: 2px dashed #eee; text-align: center; }
         .preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
         @media (min-width: 600px) { .preview-grid { grid-template-columns: repeat(6, 1fr); } }
@@ -237,15 +235,6 @@
             });
         }
 
-        function updatePreview() {
-            const grid = document.getElementById('previewGrid'); grid.innerHTML = '';
-            bottles.forEach(b => {
-                const item = document.createElement('div'); item.className = 'mini-item';
-                item.innerHTML = `<div class="mini-bottle-wrap"><div class="bottle-frame"><div class="liquid" style="height:${b.level}%; background:${b.color}; opacity:${b.alpha};"></div></div></div><div class="mini-name">${b.name}</div>`;
-                grid.appendChild(item);
-            });
-        }
-
         function startPress(i, diff) {
             initAudio(); if (bottles[i].locked) return;
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -267,10 +256,30 @@
         function removeBottle(i) { bottles.splice(i, 1); render(); }
         function toggleLock(i) { bottles[i].locked = !bottles[i].locked; render(); }
         function updateColor(i, color) { if(!bottles[i].locked){ bottles[i].color = color; render(); } }
-        function updateAlpha(i, val) { bottles[i].alpha = parseFloat(val); }
+        
+        /* バグ修正：スライダー値を即座に表示反映 */
+        function updateAlpha(i, val) { 
+            if(!bottles[i].locked) {
+                bottles[i].alpha = parseFloat(val);
+                const card = document.querySelector(`[data-index="${i}"]`);
+                if(card) {
+                    card.querySelector('.liquid').style.opacity = val;
+                }
+            }
+        }
+
         function addBottle() { bottles.push({ name: '新項目', color: PRESET_COLORS[0], level: 0, alpha: 0.8, locked: false }); render(); }
         function addPresetBottle(name, shouldRender=true) { bottles.push({ name: name, color: PRESET_COLORS[0], level: 0, alpha: 0.8, locked: false }); if(shouldRender) render(); }
         
+        function updatePreview() {
+            const grid = document.getElementById('previewGrid'); grid.innerHTML = '';
+            bottles.forEach(b => {
+                const item = document.createElement('div'); item.className = 'mini-item';
+                item.innerHTML = `<div class="mini-bottle-wrap"><div class="bottle-frame"><div class="liquid" style="height:${b.level}%; background:${b.color}; opacity:${b.alpha};"></div></div></div><div class="mini-name">${b.name}</div>`;
+                grid.appendChild(item);
+            });
+        }
+
         function generateShareURL(e) { 
             const data = btoa(unescape(encodeURIComponent(JSON.stringify(bottles)))); 
             const url = window.location.origin + window.location.pathname + '?d=' + data; 
